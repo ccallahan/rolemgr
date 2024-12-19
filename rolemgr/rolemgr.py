@@ -241,8 +241,8 @@ def usercfg() -> rx.Component:
 
 
 app = rx.App()
-app.add_page(index)
-app.add_page(rules, route="/rules")
+app.add_page(index, title="Home")
+app.add_page(rules, route="/rules", title="Rules")
 app.add_page(auth, route="/auth")
 app.add_page(callback, route="/callback")
-app.add_page(usercfg, route="/usercfg")
+app.add_page(usercfg, route="/usercfg", title="User Settings")
