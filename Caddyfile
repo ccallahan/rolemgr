@@ -30,7 +30,7 @@
 	file_server
 
 	# allows for pretty paths
-	try_files {path} {path}.html
+	try_files {path} {path}.html?{query}
 
 	# the handle_path directive will strip /backend/ from the path before proxying
 	handle_path /backend/* {
