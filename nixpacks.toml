@@ -15,5 +15,9 @@ providers = ['python']
 
 # export frontend phase
 [phases.export]
-    dependsOn = ['setup'] # run after init
+    dependsOn = ['install'] # run after init
     cmds = ['reflex export --frontend-only --no-zip'] # export the frontend to a static folder
+
+# start phase
+[start]
+    cmd = 'reflex run --backend-only --env $ENV" "caddy run 2>&1"' # run the backend and frontend in parallel, this will fail fast if either service crashes allowing railway to restart the deployment
