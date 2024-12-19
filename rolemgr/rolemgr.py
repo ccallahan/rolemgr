@@ -3,7 +3,7 @@ import reflex as rx
 import discordoauth2
 import requests
 import json
-from typing import List, Dict
+from typing import Dict
 
 
 class State(rx.State):
@@ -22,11 +22,11 @@ class State(rx.State):
 
     @rx.event
     def auth_redir(self):
-        client = discordoauth2.Client(self.discord_client_id, 
-                                      self.discord_client_secret, 
+        client = discordoauth2.Client(self.discord_client_id,
+                                      self.discord_client_secret,
                                       self.discord_callback_url)
         return rx.redirect(client.generate_uri(scope=["identify"]))
-    
+
     @rx.event
     def change_acct_auth(self):
         self.acct_auth_good = not (self.acct_auth_good)
@@ -34,8 +34,8 @@ class State(rx.State):
     @rx.event
     def process_callback(self):
         auth_code = self.router.page.params['code']
-        client = discordoauth2.Client(self.discord_client_id, 
-                                      self.discord_client_secret, 
+        client = discordoauth2.Client(self.discord_client_id,
+                                      self.discord_client_secret,
                                       self.discord_callback_url)
         access = client.exchange_code(auth_code)
 
@@ -46,28 +46,31 @@ class State(rx.State):
         self.change_acct_auth()
 
         return rx.redirect("/usercfg")
-    
-    roles: Dict[str, str] = {"Strawberry": "722481631591399484", 
-                            "Magma": "722480272204890113",
-                            "Saturn": "921573908845588480",
-                            "Lemon": "722463939933503551",
-                            "Kiwi": "722460654019280998",
-                            "Green Apple": "722464058590363669",
-                            "Sauropod": "722474287801303040",
-                            "Ocean": "722476867919020102",
-                            "Blueberry": "722476184012587088",
-                            "Yinmn": "956594507263148032",
-                            "Grape": "722467658792042567",
-                            "Magenta": "722464493187104768",
-                            "Pink": "722506272968147034"}
+
+    roles: Dict[str, str] = {"Strawberry": "722481631591399484",
+                             "Magma": "722480272204890113",
+                             "Saturn": "921573908845588480",
+                             "Lemon": "722463939933503551",
+                             "Kiwi": "722460654019280998",
+                             "Green Apple": "722464058590363669",
+                             "Sauropod": "722474287801303040",
+                             "Ocean": "722476867919020102",
+                             "Blueberry": "722476184012587088",
+                             "Yinmn": "956594507263148032",
+                             "Grape": "722467658792042567",
+                             "Magenta": "722464493187104768",
+                             "Pink": "722506272968147034"}
 
     curr_roles: Dict[str, str] = {}
 
     @rx.event
     def get_user_roles(self):
 
-        user_profile_header = {"Authorization": "Bot " + self.discord_app_token}
-        user_profile_req = requests.get('https://discord.com/api/guilds/71992212115697664/members/' + self.acct_id, headers=user_profile_header)
+        user_profile_header = {"Authorization": "Bot "
+                               + self.discord_app_token}
+        user_profile_req = requests.get(
+            'https://discord.com/api/guilds/71992212115697664/members/'
+            + self.acct_id, headers=user_profile_header)
         user_profile = json.loads(user_profile_req.text)
 
         user_roles = user_profile['roles']
@@ -83,17 +86,22 @@ class State(rx.State):
     def set_role(self, role: str):
         for key, value in self.roles.items():
             if role == key:
-                user_profile_header = {"Authorization": "Bot " + self.discord_app_token}
+                user_profile_header = {"Authorization": "Bot "
+                                       + self.discord_app_token}
                 old_role = list(self.curr_roles.values())[0]
-                requests.delete('https://discord.com/api/guilds/71992212115697664/members/' + self.acct_id + '/roles/' + old_role, headers=user_profile_header)
-                requests.put('https://discord.com/api/guilds/71992212115697664/members/' + self.acct_id + '/roles/' + value, headers=user_profile_header)
+                requests.delete('https://discord.com/api/guilds/71992212115697664/members/'
+                                + self.acct_id + '/roles/'
+                                + old_role, headers=user_profile_header)
+                requests.put('https://discord.com/api/guilds/71992212115697664/members/'
+                             + self.acct_id + '/roles/'
+                             + value, headers=user_profile_header)
 
         return rx.redirect("/usercfg")
 
-        
 
 def draw_roles_box(role: str):
     return rx.box(rx.text(role))
+
 
 def draw_roles_buttons(role: str):
     return rx.button(role, on_click=State.set_role(role))
@@ -102,6 +110,7 @@ def draw_roles_buttons(role: str):
 def navbar_link(text: str, url: str) -> rx.Component:
     """A link in the navbar."""
     return rx.link(rx.text(text), href=url, size="4", margin="0 10px")
+
 
 def navbar() -> rx.Component:
     return rx.box(
@@ -199,15 +208,18 @@ def rules() -> rx.Component:
         )
     )
 
+
 @rx.page(on_load=State.auth_redir())
 def auth() -> rx.Component:
     return rx.container(
     )
 
+
 @rx.page(on_load=State.process_callback())
 def callback() -> rx.Component:
     return rx.container(
     )
+
 
 @rx.page(on_load=State.get_user_roles())
 def usercfg() -> rx.Component:
